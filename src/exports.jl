@@ -9,3 +9,4 @@ export GKMproj_space
 export is3_indep
 export GKMadd_edge!
 export empty_gkm_graph
+export build_GKM_connection
