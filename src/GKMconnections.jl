@@ -4,7 +4,11 @@
 """
 function build_GKM_connection(gkm::AbstractGKM_graph) :: GKM_connection
   
-  @req is3_indep(gkm) "GKM graph is not 3-independent"
+  if valency(gkm) >= 3
+    @req is3_indep(gkm) "GKM graph has valency >= 3 is not 3-independent"
+  elseif valency(gkm) == 2
+    @req is2_indep(gkm) "GKM graph has valency 2 and is not 2-independent"
+  end
 
   # assign to each edges e & e_i with src(e)=src(e_i) an edge e'_i with src(e'_i)=dst(e).
   con = Dict{Edge, Dict{Edge, Edge}}()

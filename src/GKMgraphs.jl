@@ -60,6 +60,24 @@ function GKMproj_space(dim::Int; label::String = "x_")
   return gkm_graph(g, labels, M, w)
 end
 
+function is2_indep(G::AbstractGKM_graph)
+  @req valency(G) > 1 "valency is too low"
+
+  for v in 1:n_vertices(G.g)
+    for (a, b) in Iterators.product(all_neighbors(G.g, v), all_neighbors(G.g, v))
+      (a >= b) && continue
+
+      if rank(matrix([G.w[Edge(v, a)]; G.w[Edge(v, b)]])) < 2
+        return false
+      end
+
+    end
+  end
+
+  return true
+
+end
+
 function is3_indep(G::AbstractGKM_graph)
 
   @req valency(G) > 2 "valency is too low"
