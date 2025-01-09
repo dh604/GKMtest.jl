@@ -13,6 +13,8 @@ include("GKMgraphs.jl")
 include("GKMconnections.jl")
 include("cohomology.jl")
 
+include("GW/GromovWitten.jl")
+
 greet() = print("GKMtest loaded")
 
 end # module GKMtest
