@@ -11,6 +11,7 @@ include("exports.jl")
 include("Types.jl")
 include("GKMgraphs.jl")
 include("GKMconnections.jl")
+include("cohomology.jl")
 
 greet() = print("GKMtest loaded")
 

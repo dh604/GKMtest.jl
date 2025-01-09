@@ -13,6 +13,7 @@ function gkm_graph(
     @req all(v -> length(all_neighbors(g, 1)) == length(all_neighbors(g, v)), 2:n_vertices(g)) "The valency is not the same for all vertices"
   end
   for e in edges(g)
+    @req w[e] != 0 "Weight 0 edge" # this would be a problem for integrating equivariant cohomology classes. It does not happen for GKM spaces.
     w[reverse(e)] = -w[e]
   end
   return AbstractGKM_graph(g, labels, M, w)
@@ -44,19 +45,8 @@ function Base.show(io::IO, ::MIME"text/plain", G::AbstractGKM_graph)
 end
 
 
-function equivariant_cohomology_ring(G::AbstractGKM_graph)
-    
-end
-
 function rank_torus(G::AbstractGKM_graph)
   return rank(G.M)
-end
-
-function connection(G::AbstractGKM_graph, e::Edge)
-
-  # return a dictionary edges(g) -> (Edge, ZZ) where for each edge e_i containing src(e), connection[e_i] = (e', a_i) such that 
-  # w[e', dst(e)] = w[e_i, src(e)] - a_i * w[e, src(e)]
-  return   
 end
 
 function GKMproj_space(dim::Int; label::String = "x_")

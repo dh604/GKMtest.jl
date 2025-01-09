@@ -22,6 +22,19 @@
   end
 end
 
+struct GKM_cohomology_ring
+  gkm::AbstractGKM_graph
+  coeffRing::QQMPolyRing # H_T^*(point;Q)
+  cohomRing::FreeMod{QQMPolyRingElem} # H_T^*(X; Q), but without checks for consistency (see isGKMclass in cohomology.jl)
+
+  function GKM_cohomology_ring(
+    gkm::AbstractGKM_graph,
+    coeffRing::QQMPolyRing,
+    cohomRing::FreeMod{QQMPolyRingElem}
+  )
+    return new(gkm, coeffRing, cohomRing)
+  end
+end
 
 mutable struct GKM_connection
   gkm::AbstractGKM_graph
