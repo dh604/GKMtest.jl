@@ -133,3 +133,53 @@ function empty_gkm_graph(n::Int, val::Int, labels::Vector{String})
 
   return gkm_graph(Graph{Undirected}(n), labels, free_module(ZZ, val), Dict{Edge, AbstractAlgebra.Generic.FreeModuleElem{ZZRingElem}}())
 end
+
+"""
+Return true if the GKM graph is valid. This means:
+  1. Every vertex has the same degree
+  2. The weights are defined for every edge and every reverse of every edge
+  3. The weights belong to the weight lattice
+  4. The weights of an edge and its reverse sum to zero
+  5. There are the right number of vertex labels
+  6. If the valency is at least two, the weights of the graph are 2-independent.
+"""
+function GKM_isValid(gkm::AbstractGKM_graph; printDiagnostics::Bool=true)::Bool
+
+  if !all(v -> length(all_neighbors(gkm.g, 1)) == length(all_neighbors(gkm.g, v)), 2:n_vertices(gkm.g))
+    printDiagnostics && println("The valency is not the same for all vertices")
+    return false
+  end
+
+  for e in edges(gkm.g)
+    if !haskey(gkm.w, e)
+      printDiagnostics && println("Weight of $e is missing.")
+      return false
+    elseif !haskey(gkm.w, reverse(e))
+      printDiagnostics && println("Weight of $(reverse(e)) is missing.")
+      return false
+    elseif parent(gkm.w[e]) != gkm.M
+      printDiagnostics && println("Weight of $e doesn't belong to $(gkm.M).")
+      return false
+    elseif parent(gkm.w[reverse(e)]) != gkm.M
+      printDiagnostics && println("Weight of $(reverse(e)) doesn't belong to $(gkm.M).")
+      return false
+    elseif !(gkm.w[e] == -gkm.w[reverse(e)])
+      printDiagnostics && println("Weights of $e and $(reverse(e)) don't sum to zero.")
+      return false
+    end
+  end
+
+  if length(gkm.labels) != n_vertices(gkm.g)
+    printDiagnostics && println("Not the right number of labels")
+    return false
+  elseif (valency(gkm) > 1 && !is2_indep(gkm))
+    printDiagnostics && println("GKM graph is not 2-independent.")
+    return false
+  end
+
+  if (valency(gkm) > 2 && !is3_indep(gkm))
+    printDiagnostics && println("GKM graph is valid but not 3-independent, so connections may not be unique.")
+  end
+
+  return true
+end

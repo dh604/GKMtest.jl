@@ -57,8 +57,10 @@ flag_gkm_graph([1, 3]) # this is the projective space of dimension 3-1
 
 FlagVar34 = flag_gkm_graph([3, 4]) # this is the Grassmannian G(k,n) where k=3 and n = 3+4
 println("(Combinatorial) Betti numbers of flag variety with quotient dimensions (3, 4): $(bettiNumbers(FlagVar34))")
+@test GKM_isValid(FlagVar34)
 
 h=hirzebruch_surface(NormalToricVariety, 6);
 
 Gh = gkm_graph(h) # from a toric variety to a GKM graph
 @test bettiNumbers(Gh) == [1, 2, 1]
+@test GKM_isValid(Gh)
