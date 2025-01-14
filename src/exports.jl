@@ -22,3 +22,6 @@ export equivariant_cohomology_ring
 export isGKMclass
 export weightClass
 export scalar, zero, one, multiply, eulerClass, pointClass, integrateClass, integrateGKMClass
+
+# betti.jl
+export bettiNumbers
