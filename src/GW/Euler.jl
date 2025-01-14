@@ -72,7 +72,7 @@ function h(e::Edge, d::Int, con::GKM_connection, R::GKM_cohomology_ring; check::
 
     ei = Edge(src(e), v)
     wei = weightClass(ei, R)
-    ai = con.a[e][ei]
+    ai = con.a[(e, ei)]
     res = res * b(1//d * we, wei, d*ai, C)
   end
 

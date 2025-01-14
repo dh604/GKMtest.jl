@@ -1,4 +1,4 @@
-using Test
+using Test, Combinatorics, Oscar, GKMtest
 
 #some working examples
 M = free_module(ZZ, 2);
@@ -49,6 +49,7 @@ GKMadd_edge!(G2, "213", "213", x1-x3);
 
 is3_indep(G2)
 
+println("here")
 @test true
 
 F=flag_gkm_graph([1,1,1]) # this is the same as the variety G2, or Figure 1.(b). It is the variety of complete flags in C^3

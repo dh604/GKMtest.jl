@@ -14,6 +14,8 @@ export flag_gkm_graph
 
 # GKMconnections.jl
 export build_GKM_connection
+export connection_a_from_con
+export connection_map_from_a
 
 # cohomology.jl
 export equivariant_cohomology_ring
