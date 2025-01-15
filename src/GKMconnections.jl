@@ -127,6 +127,71 @@ function connection_map_from_a(gkm::AbstractGKM_graph, a::Dict{Tuple{Edge, Edge}
   return con
 end
 
+"""
+Return true if the given GKM connection is valid. This holds if and only if all of the following hold:
+  1. con and a are set for all (Edge(v,w), Edge(v,u)) where vw and vu are connected in the graph
+  2. con maps every (e,e) to reverse(e)
+  3. a maps every (e,e) to 2
+  4. Every pair (e,ei) with same source satisfies the relation of the associated a's, i.e. w[ei'] = w[ei] - a[(e,ei)] * w[e]
+"""
+function GKM_isValidConnection(con::GKM_connection; printDiagnostics::Bool=true)::Bool
+
+  for e in edges(con.gkm.g)
+    if !haskey(con.con, (e,e))
+      printDiagnostics && println("Connection misses key (e,e) for e=$e.")
+      return false
+    elseif !haskey(con.a, (e,e))
+      printDiagnostics && println("Connection misses a(e,e) for e=$e.")
+      return false
+    elseif !haskey(con.con, (reverse(e),reverse(e)))
+        printDiagnostics && println("Connection misses key (e,e) for e=$(reverse(e)).")
+        return false
+    elseif !haskey(con.a, (reverse(e),reverse(e)))
+        printDiagnostics && println("Connection misses a(e,e) for e=$(reverse(e)).")
+        return false
+    elseif con.con[(e,e)] != reverse(e)
+      printDiagnostics && println("Connection doesn't map (e,e) to reverse(e) for e=$e.")
+      return false
+    elseif con.con[(reverse(e),reverse(e))] != e
+      printDiagnostics && println("Connection doesn't map (e,e) to reverse(e) for e=$e.")
+      return false
+    elseif con.a[(e,e)] != ZZ(2)
+      printDiagnostics && println("Connection does not satisfy a(e,e)=2 for e=$e.")
+      return false
+    elseif con.a[(reverse(e), reverse(e))] != ZZ(2)
+      printDiagnostics && println("Connection does not satisfy a(e,e)=2 for e=$(reverse(e)).")
+      return false 
+    end
+  end
+
+  for v in 1:n_vertices(con.gkm.g)
+    for w in 1:n_vertices(con.gkm.g)
+      (v == w) && continue
+      e = Edge(v,w)
+      if has_edge(con.gkm.g, e)
+        for u in all_neighbors(con.gkm.g, v)
+
+          ei = Edge(v, u)
+          if !haskey(con.con, (e, ei))
+            printDiagnostics && println("Connection map misses value for ($e, $ei).")
+            return false
+          elseif !haskey(con.a, (e, ei))
+            printDiagnostics && println("Connection misses value for a($e, $ei).")
+            return false
+          end
+          epi = con.con[(e,ei)]
+          ai = con.a[(e,ei)]
+          if con.gkm.w[epi] != con.gkm.w[ei] - ai * con.gkm.w[e]
+            printDiagnostics && println("Connection map and a(e,ei) is inconsistent for (e, ei)=($e, $ei).")
+            return false
+          end
+        end
+      end
+    end
+  end
+  return true
+end
+
 function Base.show(io::IO, con::GKM_connection)
 
   if Oscar.is_terse(io)
