@@ -17,6 +17,7 @@ export GKM_isValid
 export build_GKM_connection
 export connection_a_from_con
 export connection_map_from_a
+export GKM_isValidConnection
 
 # cohomology.jl
 export equivariant_cohomology_ring
@@ -26,3 +27,9 @@ export scalar, zero, one, multiply, eulerClass, pointClass, integrateClass, inte
 
 # betti.jl
 export bettiNumbers
+
+# GKMsubgraphs.jl
+export GKMsubgraph_from_vertices
+export GKMsubgraph_from_edges
+export GKM_isValidSubgraph
+export isCompatible

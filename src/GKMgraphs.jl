@@ -11,6 +11,7 @@ function gkm_graph(
     @req all(e -> parent(w[e]) === M, edges(g)) "Character group mismatch"
     @req Set(edges(g)) == keys(w) "The axial function is not well defined"
     @req all(v -> length(all_neighbors(g, 1)) == length(all_neighbors(g, v)), 2:n_vertices(g)) "The valency is not the same for all vertices"
+    @req length(unique(labels)) == length(labels) "Labels must be unique"
   end
   for e in edges(g)
     w[reverse(e)] = -w[e]
@@ -117,15 +118,24 @@ end
 
 function GKMadd_edge!(G::AbstractGKM_graph, s::String, d::String, weight::AbstractAlgebra.Generic.FreeModuleElem{ZZRingElem})
 
-  @req (s in G.labels) "Source not found"
-  @req (d in G.labels) "Destination not found"
-  @req parent(weight) === G.M "The group of characters is not correct"
+  @req (s in G.labels) "Source label not found"
+  @req (d in G.labels) "Destination label not found"
 
   sd = indexin([s, d], G.labels)
 
-  Oscar.add_edge!(G.g, sd[1], sd[2])
-  G.w[Edge(sd[1], sd[2])] = weight
-  G.w[Edge(sd[2], sd[1])] = -weight
+  GKMadd_edge!(G, sd[1], sd[2], weight)
+
+end
+
+function GKMadd_edge!(G::AbstractGKM_graph, s::Int64, d::Int64, weight::AbstractAlgebra.Generic.FreeModuleElem{ZZRingElem})
+  
+  @req (s in 1:n_vertices(G.g)) "Source $s not found"
+  @req (d in 1:n_vertices(G.g)) "Destination $d not found"
+  @req parent(weight) === G.M "The group of characters is not correct"
+
+  Oscar.add_edge!(G.g, s, d)
+  G.w[Edge(s, d)] = weight
+  G.w[Edge(d, s)] = -weight
 
 end
 
@@ -142,6 +152,7 @@ Return true if the GKM graph is valid. This means:
   4. The weights of an edge and its reverse sum to zero
   5. There are the right number of vertex labels
   6. If the valency is at least two, the weights of the graph are 2-independent.
+  7. Vertex labels must be unique
 """
 function GKM_isValid(gkm::AbstractGKM_graph; printDiagnostics::Bool=true)::Bool
 
@@ -174,6 +185,11 @@ function GKM_isValid(gkm::AbstractGKM_graph; printDiagnostics::Bool=true)::Bool
     return false
   elseif (valency(gkm) > 1 && !is2_indep(gkm))
     printDiagnostics && println("GKM graph is not 2-independent.")
+    return false
+  end
+
+  if length(unique(gkm.labels)) != length(gkm.labels)
+    printDiagnostics && println("Labels are not unique.")
     return false
   end
 

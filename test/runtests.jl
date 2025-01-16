@@ -64,3 +64,5 @@ h=hirzebruch_surface(NormalToricVariety, 6);
 Gh = gkm_graph(h) # from a toric variety to a GKM graph
 @test bettiNumbers(Gh) == [1, 2, 1]
 @test GKM_isValid(Gh)
+
+include("GKMsubgraph_test.jl")

@@ -15,6 +15,7 @@ include("cohomology.jl")
 include("flag.jl")
 include("toric.jl")
 include("betti.jl")
+include("GKMsubgraphs.jl")
 
 include("GW/includes.jl")
 
